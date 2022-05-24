@@ -1,0 +1,13 @@
+[Unit]
+Description=SimpleRobots Hardware Test Agent
+
+[Service]
+User=sr-hardware-test
+WorkingDirectory=/tmp
+Environment="LD_LIBRARY_PATH=/usr/local/lib/arm-linux-gnueabihf"
+ExecStart=sr-hw-test-agent --server --port 16066
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
