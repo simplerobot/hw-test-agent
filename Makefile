@@ -15,6 +15,7 @@ RELEASE_BUILD_DIR = $(BUILD_DIR)/release
 SOURCE_DIR = source
 MAIN_SOURCE_DIR = $(SOURCE_DIR)/main
 TEST_SOURCE_DIR = $(SOURCE_DIR)/test
+RESOURCE_DIR = $(SOURCE_DIR)/resources
 
 VPATH = $(MAIN_SOURCE_DIR) : $(TEST_SOURCE_DIR) : $(PKG_TEST_DIR)
 TEST_SOURCE_DIRS = $(MAIN_SOURCE_DIR) $(TEST_SOURCE_DIR) $(PKG_TEST_DIR)
@@ -25,7 +26,7 @@ MAIN_SOURCE_FILES = $(notdir $(wildcard $(MAIN_SOURCE_DIRS:%=%/*.cpp)))
 TEST_CFLAGS += $(TEST_SOURCE_DIRS:%=-I%)
 MAIN_CFLAGS += $(MAIN_SOURCE_DIRS:%=-I%)
 
-.PHONY : default deps test main release clean
+.PHONY : default deps test main release install-service uninstall-service clean
 
 default : release
 
@@ -60,8 +61,25 @@ $(RELEASE_BUILD_DIR)/sr-hw-test-agent : $(MAIN_BUILD_DIR)/a.out | $(RELEASE_BUIL
 $(RELEASE_BUILD_DIR) :
 	mkdir -p $@
 
+.PHONY : install-service service-user
 
+install-service :
+	if [ ! -f $(RELEASE_BUILD_DIR)/sr-hw-test-agent ] ; then echo "Project not built."; /bin/false; fi
+	cp $(RELEASE_BUILD_DIR)/sr-hw-test-agent /usr/local/bin/sr-hw-test-agent
+	id -u sr-hardware-test || useradd -r sr-hardware-test
+	cp $(RESOURCE_DIR)/sr-hw-test-agent.service /etc/systemd/system/sr-hw-test-agent.service
+	systemctl daemon-reload
+	systemctl enable sr-hw-test-agent
+	systemctl start sr-hw-test-agent
 
+uninstall-service :
+	systemctl stop sr-hw-test-agent
+	systemctl disable sr-hw-test-agent
+	rm /etc/systemd/system/sr-hw-test-agent.service
+	systemctl daemon-reload
+	systemctl reset-failed
+	userdel sr-hardware-test
+	rm /usr/local/bin/sr-hw-test-agent
 
 %.h : ;
 %.hpp : ;
