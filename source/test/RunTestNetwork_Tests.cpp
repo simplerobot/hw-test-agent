@@ -10,7 +10,7 @@ TEST_CASE(RunTestNetwork_HappyCase)
 {
 	ConfigSection config("board");
 	config.Set("host", "host.domain.com");
-	config.Set("service", "network.port");
+	config.Set("port", "network.port");
 	std::istringstream firmware("abcd");
 	NetworkMock network_mock;
 	Parameters params = {};
@@ -41,7 +41,7 @@ TEST_CASE(RunTestNetwork_HappyCase)
 TEST_CASE(RunTestNetwork_MissingHost)
 {
 	ConfigSection config("board");
-	config.Set("service", "network.port");
+	config.Set("port", "network.port");
 	std::istringstream firmware;
 	NetworkMock network_mock;
 	Parameters params = {};
@@ -51,7 +51,7 @@ TEST_CASE(RunTestNetwork_MissingHost)
 	ASSERT(result == 4); // Invalid configuration
 }
 
-TEST_CASE(RunTestNetwork_MissingService)
+TEST_CASE(RunTestNetwork_MissingPort)
 {
 	ConfigSection config("board");
 	config.Set("host", "host.domain.com");
@@ -68,7 +68,7 @@ TEST_CASE(RunTestNetwork_ConnectionFailure)
 {
 	ConfigSection config("board");
 	config.Set("host", "host.domain.com");
-	config.Set("service", "network.port");
+	config.Set("port", "network.port");
 	std::istringstream firmware;
 	NetworkMock network_mock;
 	Parameters params = {};
@@ -83,7 +83,7 @@ TEST_CASE(RunTestNetwork_SignatureError)
 {
 	ConfigSection config("board");
 	config.Set("host", "host.domain.com");
-	config.Set("service", "network.port");
+	config.Set("port", "network.port");
 	std::istringstream firmware;
 	NetworkMock network_mock;
 	Parameters params = {};
@@ -101,7 +101,7 @@ TEST_CASE(RunTestNetwork_UnsupportedVersion)
 {
 	ConfigSection config("board");
 	config.Set("host", "host.domain.com");
-	config.Set("service", "network.port");
+	config.Set("port", "network.port");
 	std::istringstream firmware;
 	NetworkMock network_mock;
 	Parameters params = {};
@@ -120,7 +120,7 @@ TEST_CASE(RunTestNetwork_TestCommandFailure)
 {
 	ConfigSection config("board");
 	config.Set("host", "host.domain.com");
-	config.Set("service", "network.port");
+	config.Set("port", "network.port");
 	std::istringstream firmware("abcd");
 	NetworkMock network_mock;
 	Parameters params = {};
@@ -149,7 +149,7 @@ TEST_CASE(RunTestNetwork_TestCommandDrop)
 {
 	ConfigSection config("board");
 	config.Set("host", "host.domain.com");
-	config.Set("service", "network.port");
+	config.Set("port", "network.port");
 	std::istringstream firmware("abcd");
 	NetworkMock network_mock;
 	Parameters params = {};
@@ -177,7 +177,7 @@ TEST_CASE(RunTestNetwork_TestsFail)
 {
 	ConfigSection config("board");
 	config.Set("host", "host.domain.com");
-	config.Set("service", "network.port");
+	config.Set("port", "network.port");
 	std::istringstream firmware("abcd");
 	NetworkMock network_mock;
 	Parameters params = {};
@@ -209,7 +209,7 @@ TEST_CASE(RunTestNetwork_TestsTimeout)
 {
 	ConfigSection config("board");
 	config.Set("host", "host.domain.com");
-	config.Set("service", "network.port");
+	config.Set("port", "network.port");
 	std::istringstream firmware("abcd");
 	NetworkMock network_mock;
 	Parameters params = {};

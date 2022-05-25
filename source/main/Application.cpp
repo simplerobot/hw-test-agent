@@ -88,7 +88,7 @@ void Application::ShowConfig(const ConfigFile& config) const
 		std::printf("  [RLM2]\n");
 		std::printf("  type=network\n");
 		std::printf("  host=127.0.0.1\n");
-		std::printf("  service=5151\n");
+		std::printf("  port=5151\n");
 	}
 	else
 	{

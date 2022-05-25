@@ -19,7 +19,7 @@ extern void PrintHelp(const char* app_name)
 	std::printf("  -u, --unlocked           Don't ensure only one agent runs at a time\n");
 	std::printf("  -lXX, --lock-timeout=XX  Seconds to wait for exclusive agent access\n");
 	std::printf("  -tXX, --test-timeout=XX  Seconds to wait for test to complete\n");
-	std::printf("  -s, --server             Don't ensure only one agent runs at a time\n");
+	std::printf("  -s, --server             Run as a network server\n");
 	std::printf("  -pXX, --port=XX          Port for the server to listen on\n");
 	std::printf("  -c, --show-config        Show board configuration\n");
 }
