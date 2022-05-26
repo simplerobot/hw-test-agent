@@ -13,6 +13,8 @@ struct Parameters
 	bool show_help = false;
 	uint32_t lock_timeout_ms = 0;
 	uint32_t test_timeout_ms = 0;
+	uint32_t system_frequency_hz = 0;
+	uint32_t trace_frequency_hz = 0;
 	const char* service = nullptr;
 	const char* board = nullptr;
 	const char* file = nullptr;

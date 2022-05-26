@@ -89,6 +89,8 @@ extern int RunTestNetwork(const Parameters& params, const ConfigSection& config,
 	connection.Write(params.board);
 	connection.Write(params.lock_timeout_ms);
 	connection.Write(params.test_timeout_ms);
+	connection.Write(params.system_frequency_hz);
+	connection.Write(params.trace_frequency_hz);
 	connection.Write(firmware);
 
 	uint8_t status = HWTA_RESPONSE_ERROR;

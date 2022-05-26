@@ -11,6 +11,8 @@ TEST_CASE(RunTestStlink_HappyCase)
 	Parameters params = {};
 	params.file = "filename.bin";
 	params.test_timeout_ms = 10000;
+	params.system_frequency_hz = 123000000;
+	params.trace_frequency_hz = 2000000;
 
 	ConfigSection config("board");
 	config.Set("id", "programmer-id");
@@ -20,7 +22,53 @@ TEST_CASE(RunTestStlink_HappyCase)
 	mock.ExpectRun("/usr/local/bin/st-flash --reset --serial programmer-id write filename.bin 0x12345", true);
 	mock.ExpectRead(-1);
 	mock.ExpectWait(0);
-	mock.ExpectRun("/usr/local/bin/st-trace --serial programmer-id", true);
+	mock.ExpectRun("/usr/local/bin/st-trace --serial programmer-id --clock=123 --trace=2000000", true);
+	mock.ExpectReads("Testing...\nEOT P");
+	mock.ExpectKill();
+	mock.ExpectWait(1);
+
+	ASSERT(RunTestStlink(params, config, mock) == EXITCODE_SUCCESS);
+}
+
+TEST_CASE(RunTestStlink_HappyCase_NoSystemClock)
+{
+	Parameters params = {};
+	params.file = "filename.bin";
+	params.test_timeout_ms = 10000;
+	params.trace_frequency_hz = 2000000;
+
+	ConfigSection config("board");
+	config.Set("id", "programmer-id");
+	config.Set("flash-base", "0x12345");
+
+	SystemExecuteMock mock;
+	mock.ExpectRun("/usr/local/bin/st-flash --reset --serial programmer-id write filename.bin 0x12345", true);
+	mock.ExpectRead(-1);
+	mock.ExpectWait(0);
+	mock.ExpectRun("/usr/local/bin/st-trace --serial programmer-id --trace=2000000", true);
+	mock.ExpectReads("Testing...\nEOT P");
+	mock.ExpectKill();
+	mock.ExpectWait(1);
+
+	ASSERT(RunTestStlink(params, config, mock) == EXITCODE_SUCCESS);
+}
+
+TEST_CASE(RunTestStlink_HappyCase_NoTraceClock)
+{
+	Parameters params = {};
+	params.file = "filename.bin";
+	params.test_timeout_ms = 10000;
+	params.system_frequency_hz = 123000000;
+
+	ConfigSection config("board");
+	config.Set("id", "programmer-id");
+	config.Set("flash-base", "0x12345");
+
+	SystemExecuteMock mock;
+	mock.ExpectRun("/usr/local/bin/st-flash --reset --serial programmer-id write filename.bin 0x12345", true);
+	mock.ExpectRead(-1);
+	mock.ExpectWait(0);
+	mock.ExpectRun("/usr/local/bin/st-trace --serial programmer-id --clock=123", true);
 	mock.ExpectReads("Testing...\nEOT P");
 	mock.ExpectKill();
 	mock.ExpectWait(1);

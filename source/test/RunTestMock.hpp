@@ -13,8 +13,12 @@ public:
 
 	virtual int Run(const Parameters& params, const ConfigFile& config) override;
 
+	void ExpectRunThrow();
+
 private:
 	bool m_expecting_mock_call;
+
+	bool m_should_run_throw;
 
 	std::string m_expected_params;
 	std::string m_expected_config;

@@ -19,6 +19,8 @@ extern void PrintHelp(const char* app_name)
 	std::printf("  -u, --unlocked           Don't ensure only one agent runs at a time\n");
 	std::printf("  -lXX, --lock-timeout=XX  Seconds to wait for exclusive agent access\n");
 	std::printf("  -tXX, --test-timeout=XX  Seconds to wait for test to complete\n");
+	std::printf("  --system-frequency=XX    Firmware system frequency in hz\n");
+	std::printf("  --trace-frequency=XX     Firmware ITM trace frequency in hz\n");
 	std::printf("  -s, --server             Run as a network server\n");
 	std::printf("  -pXX, --port=XX          Port for the server to listen on\n");
 	std::printf("  -c, --show-config        Show board configuration\n");
@@ -39,15 +41,18 @@ static void CheckParameterError(Parameters& params, bool condition, const char* 
 extern Parameters ParseCommandLineArguments(int argc, char* const argv[])
 {
 	static struct option long_options[] = {
-		{ "help",         no_argument,       nullptr, 'h' },
-		{ "run",          no_argument,       nullptr, 'r' },
-		{ "board",        required_argument, nullptr, 'b' },
-		{ "file",         required_argument, nullptr, 'f' },
-		{ "lock-timeout", required_argument, nullptr, 'l' },
-		{ "test-timeout", required_argument, nullptr, 't' },
-		{ "server",       no_argument,       nullptr, 's' },
-		{ "port",         required_argument, nullptr, 'p' },
-		{ "show-config",  no_argument,       nullptr, 'c' },
+		{ "help",             no_argument,       nullptr, 'h' },
+		{ "run",              no_argument,       nullptr, 'r' },
+		{ "board",            required_argument, nullptr, 'b' },
+		{ "file",             required_argument, nullptr, 'f' },
+		{ "lock-timeout",     required_argument, nullptr, 'l' },
+		{ "test-timeout",     required_argument, nullptr, 't' },
+		{ "server",           no_argument,       nullptr, 's' },
+		{ "port",             required_argument, nullptr, 'p' },
+		{ "show-config",      no_argument,       nullptr, 'c' },
+		{ "system-frequency", required_argument, nullptr, 'y' },
+		{ "trace-frequency",  required_argument, nullptr, 'z' },
+
 		{ nullptr, 0, nullptr, 0 }
 	};
 
@@ -97,6 +102,16 @@ extern Parameters ParseCommandLineArguments(int argc, char* const argv[])
 			CheckParameterError(params, !params.show_config, "Error: Duplicate parameter.");
 			params.show_config = true;
 			break;
+		case 'y': // system-frequency
+			CheckParameterError(params, params.system_frequency_hz == 0, "Error: Duplicate parameter.");
+			params.system_frequency_hz = std::atoi(optarg);
+			CheckParameterError(params, params.system_frequency_hz != 0, "Error: Invalid system frequency.");
+			break;
+		case 'z': // trace-frequency
+			CheckParameterError(params, params.trace_frequency_hz == 0, "Error: Duplicate parameter.");
+			params.trace_frequency_hz = std::atoi(optarg);
+			CheckParameterError(params, params.trace_frequency_hz != 0, "Error: Invalid trace frequency.");
+			break;
 		case '?':
 		default:
 			ParameterError(params, "Error: Unknown parameter.");
@@ -116,6 +131,10 @@ extern Parameters ParseCommandLineArguments(int argc, char* const argv[])
 		ParameterError(params, "Error: Only provide a board when running tests.");
 	if (!params.run_test && params.file != nullptr)
 		ParameterError(params, "Error: Only provide a file when running tests.");
+	if (!params.run_test && params.system_frequency_hz != 0)
+		ParameterError(params, "Error: Only provide a system frequency when running tests.");
+	if (!params.run_test && params.trace_frequency_hz != 0)
+		ParameterError(params, "Error: Only provide a trace frequency when running tests.");
 	if (!params.run_test && params.test_timeout_ms != 0)
 		ParameterError(params, "Error: Only provide a test timeout when running tests.");
 	if (!params.run_test && !params.run_server && params.lock_timeout_ms != 0)
@@ -151,6 +170,8 @@ extern std::ostream& operator<<(std::ostream& out, const Parameters& params)
 	PRINT_PARAM_BOOL(show_help);
 	PRINT_PARAM_INT(lock_timeout_ms);
 	PRINT_PARAM_INT(test_timeout_ms);
+	PRINT_PARAM_INT(system_frequency_hz);
+	PRINT_PARAM_INT(trace_frequency_hz);
 	PRINT_PARAM_STR(service);
 	PRINT_PARAM_STR(board);
 	PRINT_PARAM_STR(file);

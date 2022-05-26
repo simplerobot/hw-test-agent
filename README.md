@@ -14,6 +14,9 @@ build/release/sr-hw-test-agent --run --board BOARD --file FILE
   -u, --unlocked           Don't ensure only one agent runs at a time
   -lXX, --lock-timeout=XX  Seconds to wait for exclusive agent access
   -tXX, --test-timeout=XX  Seconds to wait for test to complete
+  --system-frequency=XX    Firmware system frequency in hz
+  --trace-frequency=XX     Firmware ITM trace frequency in hz
+  
 ```
 Run the agent as a network server that will listen for test requests over the network.  NOTE: There is no security.  Any software that can reach this port can run any file.  Only expose this software in a trusted environment.
 ```

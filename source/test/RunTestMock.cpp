@@ -7,12 +7,14 @@
 
 RunTestMock::RunTestMock()
 	: m_expecting_mock_call(false)
+	, m_should_run_throw(false)
 	, m_result(0)
 {
 }
 
 RunTestMock::RunTestMock(const Parameters& expected_params, const ConfigFile& expected_config, const std::string& print, int result)
 	: m_expecting_mock_call(true)
+	, m_should_run_throw(false)
 	, m_expected_params(ToString(expected_params))
 	, m_expected_config(ToString(expected_config))
 	, m_print(print)
@@ -59,5 +61,14 @@ int RunTestMock::Run(const Parameters& params, const ConfigFile& config)
 
 	std::printf("%s", m_print.c_str());
 
+	if (m_should_run_throw)
+		throw std::runtime_error("expected exception");
+
 	return m_result;
 }
+
+void RunTestMock::ExpectRunThrow()
+{
+	m_should_run_throw = true;
+}
+

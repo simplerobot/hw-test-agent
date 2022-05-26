@@ -16,12 +16,12 @@ static bool TestCommandLine(const std::vector<const char*>& args)
 TEST_CASE(ParseCommandLineArguments_HappyCase)
 {
 	ASSERT(TestCommandLine({ "app", "--help" }));
-	ASSERT(TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120" }));
+	ASSERT(TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency", "180000000", "--trace-frequency", "2000000" }));
 	ASSERT(TestCommandLine({ "app", "--server", "--port", "12345" }));
 	ASSERT(TestCommandLine({ "app", "--show-config" }));
 
 	ASSERT(TestCommandLine({ "app", "--help" }));
-	ASSERT(TestCommandLine({ "app", "--run", "--board=boardname", "--file=filename", "--lock-timeout=120", "--test-timeout=120" }));
+	ASSERT(TestCommandLine({ "app", "--run", "--board=boardname", "--file=filename", "--lock-timeout=120", "--test-timeout=120", "--system-frequency=180000000", "--trace-frequency=2000000" }));
 	ASSERT(TestCommandLine({ "app", "--server", "--port=12345" }));
 	ASSERT(TestCommandLine({ "app", "--show-config" }));
 
@@ -39,11 +39,13 @@ TEST_CASE(ParseCommandLineArguments_HappyCase)
 TEST_CASE(ParseCommandLineArguments_Duplicate)
 {
 	ASSERT(!TestCommandLine({ "app", "--help", "--help" }));
-	ASSERT(!TestCommandLine({ "app", "--run", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120" }));
-	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120" }));
-	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120" }));
-	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--lock-timeout", "120", "--test-timeout", "120" }));
-	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--test-timeout", "120" }));
+	ASSERT(!TestCommandLine({ "app", "--run", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency=180000000", "--trace-frequency=2000000" }));
+	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency=180000000", "--trace-frequency=2000000" }));
+	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency=180000000", "--trace-frequency=2000000" }));
+	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency=180000000", "--trace-frequency=2000000" }));
+	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--test-timeout", "120", "--system-frequency=180000000", "--trace-frequency=2000000" }));
+	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency=180000000", "--system-frequency=180000000", "--trace-frequency=2000000" }));
+	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency=180000000", "--trace-frequency=2000000", "--trace-frequency=2000000" }));
 	ASSERT(!TestCommandLine({ "app", "--server", "--server", "--port", "12345" }));
 	ASSERT(!TestCommandLine({ "app", "--server", "--port", "12345", "--port", "12345" }));
 	ASSERT(!TestCommandLine({ "app", "--show-config", "--show-config" }));
@@ -58,6 +60,15 @@ TEST_CASE(ParseCommandLineArguments_InvalidValues)
 
 	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "abc", "--test-timeout", "120" }));
 	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "def" }));
+
+	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency=", "--trace-frequency=2000000" }));
+	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency", "--trace-frequency=2000000" }));
+	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency=0", "--trace-frequency=2000000" }));
+	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency=abc", "--trace-frequency=2000000" }));
+	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency=180000000", "--trace-frequency=" }));
+	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency=180000000", "--trace-frequency" }));
+	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency=180000000", "--trace-frequency=0" }));
+	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency=180000000", "--trace-frequency=abc" }));
 }
 
 TEST_CASE(ParseCommandLineArguments_InvalidArguments)
@@ -70,6 +81,8 @@ TEST_CASE(ParseCommandLineArguments_InvalidArguments)
 	ASSERT(!TestCommandLine({ "app", "--show-config", "--test-timeout", "120" }));
 	ASSERT(!TestCommandLine({ "app", "--show-config", "--port", "12345" }));
 	ASSERT(!TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--server", "--port", "12345" }));
+	ASSERT(!TestCommandLine({ "app", "--show-config", "--system-frequency=180000000" }));
+	ASSERT(!TestCommandLine({ "app", "--show-config", "--trace-frequency=2000000" }));
 }
 
 TEST_CASE(Parameters_ToString_Empty)
@@ -92,10 +105,12 @@ TEST_CASE(Parameters_ToString_HappyCase)
 	test.show_help = true;
 	test.lock_timeout_ms = 1234;
 	test.test_timeout_ms = 5678;
+	test.system_frequency_hz = 246;
+	test.trace_frequency_hz = 369;
 	test.service = "service-name";
 	test.board = "board-name";
 	test.file = "file-name";
-	std::string expected = "Parameters { invalid_parameters = true, run_test = true, run_server = true, show_config = true, show_help = true, lock_timeout_ms = 1234, test_timeout_ms = 5678, service = 'service-name', board = 'board-name', file = 'file-name', }";
+	std::string expected = "Parameters { invalid_parameters = true, run_test = true, run_server = true, show_config = true, show_help = true, lock_timeout_ms = 1234, test_timeout_ms = 5678, system_frequency_hz = 246, trace_frequency_hz = 369, service = 'service-name', board = 'board-name', file = 'file-name', }";
 
 	std::string actual = ToString(test);
 

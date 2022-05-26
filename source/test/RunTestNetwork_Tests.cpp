@@ -17,6 +17,8 @@ TEST_CASE(RunTestNetwork_HappyCase)
 	params.board = "board-name";
 	params.lock_timeout_ms = 0x12345678;
 	params.test_timeout_ms = 0x2468ABCD;
+	params.system_frequency_hz = 0x13691215;
+	params.trace_frequency_hz = 0x48121620;
 	network_mock.ExpectConnect("host.domain.com", "network.port", true);
 	network_mock.AddExpectWrite("HWTA", 4);
 	network_mock.AddExpectWrite32(0x00000100);
@@ -26,6 +28,8 @@ TEST_CASE(RunTestNetwork_HappyCase)
 	network_mock.AddExpectWrite("board-name", 11); // board name
 	network_mock.AddExpectWrite32(0x12345678); // lock timeout
 	network_mock.AddExpectWrite32(0x2468ABCD); // test timeout
+	network_mock.AddExpectWrite32(0x13691215); // system clock frequency
+	network_mock.AddExpectWrite32(0x48121620); // trace clock frequency
 	network_mock.AddExpectWrite8(4); // Firmware length
 	network_mock.AddExpectWrite("abcd", 4); // Firmware contents
 	network_mock.AddExpectRead8(0); // response OK
@@ -127,6 +131,8 @@ TEST_CASE(RunTestNetwork_TestCommandFailure)
 	params.board = "board-name";
 	params.lock_timeout_ms = 0x12345678;
 	params.test_timeout_ms = 0x2468ABCD;
+	params.system_frequency_hz = 0x13691215;
+	params.trace_frequency_hz = 0x48121620;
 	network_mock.ExpectConnect("host.domain.com", "network.port", true);
 	network_mock.AddExpectWrite("HWTA", 4);
 	network_mock.AddExpectWrite32(0x00000100);
@@ -136,6 +142,8 @@ TEST_CASE(RunTestNetwork_TestCommandFailure)
 	network_mock.AddExpectWrite("board-name", 11); // board name
 	network_mock.AddExpectWrite32(0x12345678); // lock timeout
 	network_mock.AddExpectWrite32(0x2468ABCD); // test timeout
+	network_mock.AddExpectWrite32(0x13691215); // system clock frequency
+	network_mock.AddExpectWrite32(0x48121620); // trace clock frequency
 	network_mock.AddExpectWrite8(4); // Firmware length
 	network_mock.AddExpectWrite("abcd", 4); // Firmware contents
 	network_mock.AddExpectRead8(1); // response Not OK
@@ -156,6 +164,8 @@ TEST_CASE(RunTestNetwork_TestCommandDrop)
 	params.board = "board-name";
 	params.lock_timeout_ms = 0x12345678;
 	params.test_timeout_ms = 0x2468ABCD;
+	params.system_frequency_hz = 0x13691215;
+	params.trace_frequency_hz = 0x48121620;
 	network_mock.ExpectConnect("host.domain.com", "network.port", true);
 	network_mock.AddExpectWrite("HWTA", 4);
 	network_mock.AddExpectWrite32(0x00000100);
@@ -165,6 +175,8 @@ TEST_CASE(RunTestNetwork_TestCommandDrop)
 	network_mock.AddExpectWrite("board-name", 11); // board name
 	network_mock.AddExpectWrite32(0x12345678); // lock timeout
 	network_mock.AddExpectWrite32(0x2468ABCD); // test timeout
+	network_mock.AddExpectWrite32(0x13691215); // system clock frequency
+	network_mock.AddExpectWrite32(0x48121620); // trace clock frequency
 	network_mock.AddExpectWrite8(4); // Firmware length
 	network_mock.AddExpectWrite("abcd", 4); // Firmware contents
 
@@ -184,6 +196,8 @@ TEST_CASE(RunTestNetwork_TestsFail)
 	params.board = "board-name";
 	params.lock_timeout_ms = 0x12345678;
 	params.test_timeout_ms = 0x2468ABCD;
+	params.system_frequency_hz = 0x13691215;
+	params.trace_frequency_hz = 0x48121620;
 	network_mock.ExpectConnect("host.domain.com", "network.port", true);
 	network_mock.AddExpectWrite("HWTA", 4);
 	network_mock.AddExpectWrite32(0x00000100);
@@ -193,6 +207,8 @@ TEST_CASE(RunTestNetwork_TestsFail)
 	network_mock.AddExpectWrite("board-name", 11); // board name
 	network_mock.AddExpectWrite32(0x12345678); // lock timeout
 	network_mock.AddExpectWrite32(0x2468ABCD); // test timeout
+	network_mock.AddExpectWrite32(0x13691215); // system clock frequency
+	network_mock.AddExpectWrite32(0x48121620); // trace clock frequency
 	network_mock.AddExpectWrite8(4); // Firmware length
 	network_mock.AddExpectWrite("abcd", 4); // Firmware contents
 	network_mock.AddExpectRead8(0); // response OK
@@ -216,6 +232,8 @@ TEST_CASE(RunTestNetwork_TestsTimeout)
 	params.board = "board-name";
 	params.lock_timeout_ms = 0x12345678;
 	params.test_timeout_ms = 0x2468ABCD;
+	params.system_frequency_hz = 0x13691215;
+	params.trace_frequency_hz = 0x48121620;
 	network_mock.ExpectConnect("host.domain.com", "network.port", true);
 	network_mock.AddExpectWrite("HWTA", 4);
 	network_mock.AddExpectWrite32(0x00000100);
@@ -225,6 +243,8 @@ TEST_CASE(RunTestNetwork_TestsTimeout)
 	network_mock.AddExpectWrite("board-name", 11); // board name
 	network_mock.AddExpectWrite32(0x12345678); // lock timeout
 	network_mock.AddExpectWrite32(0x2468ABCD); // test timeout
+	network_mock.AddExpectWrite32(0x13691215); // system clock frequency
+	network_mock.AddExpectWrite32(0x48121620); // trace clock frequency
 	network_mock.AddExpectWrite8(4); // Firmware length
 	network_mock.AddExpectWrite("abcd", 4); // Firmware contents
 	network_mock.AddExpectRead8(0); // response OK

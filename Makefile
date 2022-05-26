@@ -65,6 +65,7 @@ $(RELEASE_BUILD_DIR) :
 
 install-service :
 	if [ ! -f $(RELEASE_BUILD_DIR)/sr-hw-test-agent ] ; then echo "Project not built."; /bin/false; fi
+	- systemctl stop sr-hw-test-agent
 	cp $(RELEASE_BUILD_DIR)/sr-hw-test-agent /usr/local/bin/sr-hw-test-agent
 	id -u sr-hardware-test || useradd -r sr-hardware-test
 	cp $(RESOURCE_DIR)/sr-hw-test-agent.service /etc/systemd/system/sr-hw-test-agent.service
@@ -78,7 +79,6 @@ uninstall-service :
 	rm /etc/systemd/system/sr-hw-test-agent.service
 	systemctl daemon-reload
 	systemctl reset-failed
-	userdel sr-hardware-test
 	rm /usr/local/bin/sr-hw-test-agent
 
 %.h : ;

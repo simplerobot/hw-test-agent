@@ -104,6 +104,7 @@ void Protocol::Read(std::ostream& out)
 		else
 			Error("Error: Binary object length exceeds maximum %zd.\n", m_max_binary_length);
 	} while (current_count == 255);
+	out.flush();
 }
 
 void Protocol::Read(std::string& s)

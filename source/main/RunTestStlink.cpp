@@ -70,7 +70,15 @@ extern int RunTestStlink(const Parameters& params, const ConfigSection& config, 
 
 	// Read data from the SWO output.  Echo output to the stdout and watch for a line starting with "EOT P[ASS]" or "EOT F[AIL]".
 
-	if (!exec.Run("/usr/local/bin/st-trace", { "--serial", id }))
+	std::vector<std::string> trace_args;
+	trace_args.push_back("--serial");
+	trace_args.push_back(id);
+	if (params.system_frequency_hz != 0)
+		trace_args.push_back("--clock=" + std::to_string(params.system_frequency_hz / 1000000));
+	if (params.trace_frequency_hz != 0)
+		trace_args.push_back("--trace=" + std::to_string(params.trace_frequency_hz));
+
+	if (!exec.Run("/usr/local/bin/st-trace", trace_args))
 	{
 		std::printf("ERROR: Unable to create process st-trace (%d)\n", errno);
 		return EXITCODE_TOOL_FAILED;

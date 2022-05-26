@@ -116,6 +116,8 @@ static bool RunServerTestFirmware(const Parameters& parent_params, const ConfigF
 
 	connection.Read(child_params.lock_timeout_ms);
 	connection.Read(child_params.test_timeout_ms);
+	connection.Read(child_params.system_frequency_hz);
+	connection.Read(child_params.trace_frequency_hz);
 
 	std::string temp_filename("/tmp/hwta.fw.XXXXXX");
 	int temp_file_fd = ::mkstemp(&temp_filename[0]);
@@ -165,20 +167,27 @@ static bool RunServerTestFirmware(const Parameters& parent_params, const ConfigF
 		::close(pipe_read_fd);
 	});
 
-	int result = test_runner.Run(child_params, config);
 	uint8_t result_code = HWTA_RESPONSE_ERROR;
-	switch (result)
+	try
 	{
-	case EXITCODE_SUCCESS:
-		result_code = HWTA_RESPONSE_TESTS_PASS;
-		break;
-	case EXITCODE_TESTS_FAILED:
-		result_code = HWTA_RESPONSE_TESTS_FAIL;
-		break;
-	case EXITCODE_LOCK_FAILED:
-	case EXITCODE_TESTS_TIMEOUT:
-		result_code = HWTA_RESPONSE_TESTS_TIMEOUT;
-		break;
+		int result = test_runner.Run(child_params, config);
+		switch (result)
+		{
+		case EXITCODE_SUCCESS:
+			result_code = HWTA_RESPONSE_TESTS_PASS;
+			break;
+		case EXITCODE_TESTS_FAILED:
+			result_code = HWTA_RESPONSE_TESTS_FAIL;
+			break;
+		case EXITCODE_LOCK_FAILED:
+		case EXITCODE_TESTS_TIMEOUT:
+			result_code = HWTA_RESPONSE_TESTS_TIMEOUT;
+			break;
+		}
+	}
+	catch (...)
+	{
+		// This was added for tests.  When a test asserts false, it throws and exception that results in the above thread not being joined.
 	}
 
 	// Stop redirecting output to the network.
