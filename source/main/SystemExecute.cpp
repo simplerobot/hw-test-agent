@@ -32,6 +32,7 @@ bool SystemExecute::Run(const std::string& application, const std::vector<std::s
 	{
 		::close(input_fd);
 		::dup2(output_fd, 1);
+		::dup2(output_fd, 2);
 		::close(output_fd);
 
 		std::vector<std::string> local_args;
@@ -45,10 +46,12 @@ bool SystemExecute::Run(const std::string& application, const std::vector<std::s
 		raw_args.push_back(nullptr);
 
 		::execvp(application.c_str(), raw_args.data());
+		std::printf("ERROR: Unable to create process %s (%d)\n", application.c_str(), errno);
+		::exit(1);
 	}
 	if (pid <= 0)
 	{
-		printf("ERROR: Unable to create process st-trace (%d)\n", errno);
+		std::printf("ERROR: Unable to launch process %s (%d)\n", application.c_str(), errno);
 		exit(1);
 	}
 

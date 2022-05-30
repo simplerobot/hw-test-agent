@@ -49,6 +49,7 @@ extern int RunTestStlink(const Parameters& params, const ConfigSection& config, 
 
 	// Download firmware to the board. (Only show the output if we fail.)
 
+	std::printf("Downloading firmware to board %s.\n", params.board);
 	if (!exec.Run("/usr/local/bin/st-flash", { "--reset", "--serial", id, "write", params.file, flash_base }))
 	{
 		std::printf("ERROR: Unable to create process st-flash (%d)\n", errno);
@@ -77,7 +78,9 @@ extern int RunTestStlink(const Parameters& params, const ConfigSection& config, 
 		trace_args.push_back("--clock=" + std::to_string(params.system_frequency_hz / 1000000));
 	if (params.trace_frequency_hz != 0)
 		trace_args.push_back("--trace=" + std::to_string(params.trace_frequency_hz));
+	trace_args.push_back("--verbose=49");
 
+	std::printf("Running tests on board %s.\n", params.board);
 	if (!exec.Run("/usr/local/bin/st-trace", trace_args))
 	{
 		std::printf("ERROR: Unable to create process st-trace (%d)\n", errno);
