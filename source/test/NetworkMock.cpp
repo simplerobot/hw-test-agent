@@ -93,13 +93,13 @@ void NetworkMock::AddExpectRead(const void* buffer, size_t length)
 
 void NetworkMock::AddExpectRead32(uint32_t data)
 {
-	uint32_t x = ::htonl(data);
+	uint32_t x = htonl(data);
 	AddExpectRead(&x, sizeof(x));
 }
 
 void NetworkMock::AddExpectRead16(uint16_t data)
 {
-	uint16_t x = ::htons(data);
+	uint16_t x = htons(data);
 	AddExpectRead(&x, sizeof(x));
 }
 
@@ -116,13 +116,13 @@ void NetworkMock::AddExpectWrite(const void* buffer, size_t length)
 
 void NetworkMock::AddExpectWrite32(uint32_t data)
 {
-	uint32_t x = ::htonl(data);
+	uint32_t x = htonl(data);
 	AddExpectWrite(&x, sizeof(x));
 }
 
 void NetworkMock::AddExpectWrite16(uint16_t data)
 {
-	uint16_t x = ::htons(data);
+	uint16_t x = htons(data);
 	AddExpectWrite(&x, sizeof(x));
 }
 

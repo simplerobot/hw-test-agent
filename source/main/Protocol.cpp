@@ -65,13 +65,13 @@ void Protocol::Write(const std::string& s)
 
 void Protocol::Write(uint32_t x)
 {
-	uint32_t v = ::htonl(x);
+	uint32_t v = htonl(x);
 	Write(&v, sizeof(v));
 }
 
 void Protocol::Write(uint16_t x)
 {
-	uint16_t v = ::htons(x);
+	uint16_t v = htons(x);
 	Write(&v, sizeof(v));
 }
 
@@ -125,16 +125,16 @@ void Protocol::Read(std::string& s)
 
 void Protocol::Read(uint32_t& x)
 {
-	uint32_t v = ::htonl(x);
+	uint32_t v = htonl(x);
 	Read(&v, sizeof(v));
-	x = ::ntohl(v);
+	x = ntohl(v);
 }
 
 void Protocol::Read(uint16_t& x)
 {
-	uint16_t v = ::htons(x);
+	uint16_t v = htons(x);
 	Read(&v, sizeof(v));
-	x = ::htons(v);
+	x = ntohs(v);
 }
 
 void Protocol::Read(uint8_t& x)
