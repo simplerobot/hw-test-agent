@@ -75,7 +75,7 @@ extern int RunTestStlink(const Parameters& params, const ConfigSection& config, 
 	trace_args.push_back("--serial");
 	trace_args.push_back(id);
 	if (params.system_frequency_hz != 0)
-		trace_args.push_back("--clock=" + std::to_string(params.system_frequency_hz / 1000000));
+		trace_args.push_back("--clock=" + std::to_string(params.system_frequency_hz));
 	if (params.trace_frequency_hz != 0)
 		trace_args.push_back("--trace=" + std::to_string(params.trace_frequency_hz));
 	trace_args.push_back("--verbose=49");

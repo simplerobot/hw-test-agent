@@ -22,7 +22,7 @@ TEST_CASE(RunTestStlink_HappyCase)
 	mock.ExpectRun("/usr/local/bin/st-flash --reset --serial programmer-id write filename.bin 0x12345", true);
 	mock.ExpectRead(-1);
 	mock.ExpectWait(0);
-	mock.ExpectRun("/usr/local/bin/st-trace --serial programmer-id --clock=123 --trace=2000000 --verbose=49", true);
+	mock.ExpectRun("/usr/local/bin/st-trace --serial programmer-id --clock=123000000 --trace=2000000 --verbose=49", true);
 	mock.ExpectReads("Testing...\nEOT P");
 	mock.ExpectKill();
 	mock.ExpectWait(1);
@@ -68,7 +68,7 @@ TEST_CASE(RunTestStlink_HappyCase_NoTraceClock)
 	mock.ExpectRun("/usr/local/bin/st-flash --reset --serial programmer-id write filename.bin 0x12345", true);
 	mock.ExpectRead(-1);
 	mock.ExpectWait(0);
-	mock.ExpectRun("/usr/local/bin/st-trace --serial programmer-id --clock=123 --verbose=49", true);
+	mock.ExpectRun("/usr/local/bin/st-trace --serial programmer-id --clock=123000000 --verbose=49", true);
 	mock.ExpectReads("Testing...\nEOT P");
 	mock.ExpectKill();
 	mock.ExpectWait(1);
