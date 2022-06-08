@@ -80,7 +80,7 @@ extern int RunTestStlink(const Parameters& params, const ConfigSection& config, 
 		trace_args.push_back("--trace=" + std::to_string(params.trace_frequency_hz));
 	trace_args.push_back("--verbose=49");
 
-	std::printf("=== Running tests on board %s. ===\n", params.board);
+	std::printf("Running tests on board %s.\n", params.board);
 	if (!exec.Run("/usr/local/bin/st-trace", trace_args))
 	{
 		std::printf("ERROR: Unable to create process st-trace (%d)\n", errno);
@@ -138,7 +138,7 @@ extern int RunTestStlink(const Parameters& params, const ConfigSection& config, 
 	cleanup_thread.join();
 	exec.Wait();
 
-	std::printf("=== Done running tests on board %s. ===\n", params.board);
+	std::printf("Done running tests on board %s.\n", params.board);
 
 	if (watchdog_timeout)
 	{
