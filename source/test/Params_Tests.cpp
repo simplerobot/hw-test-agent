@@ -34,6 +34,8 @@ TEST_CASE(ParseCommandLineArguments_HappyCase)
 	ASSERT(TestCommandLine({ "app", "-r", "-bboardname", "-ffilename", "-l120", "-t120" }));
 	ASSERT(TestCommandLine({ "app", "-s", "-p12345" }));
 	ASSERT(TestCommandLine({ "app", "-c" }));
+
+	ASSERT(TestCommandLine({ "app", "--run", "--board", "boardname", "--file", "filename", "--lock-timeout", "120", "--test-timeout", "120", "--system-frequency", "180m", "--trace-frequency", "2m" }));
 }
 
 TEST_CASE(ParseCommandLineArguments_Duplicate)
@@ -116,3 +118,43 @@ TEST_CASE(Parameters_ToString_HappyCase)
 
 	ASSERT(actual == expected);
 }
+
+TEST_CASE(ParseFrequencyParameter_HappyCase)
+{
+	Parameters params;
+
+	ASSERT(ParseFrequencyParameter(params, "123456") == 123456);
+	ASSERT(ParseFrequencyParameter(params, "123.456k") == 123456);
+	ASSERT(ParseFrequencyParameter(params, "123.456789m") == 123456789);
+	ASSERT(ParseFrequencyParameter(params, "1.234567890g") == 1234567890);
+	ASSERT(ParseFrequencyParameter(params, "4294967295") == 4294967295);
+
+	ASSERT(!params.invalid_parameters);
+}
+
+TEST_CASE(ParseFrequencyParameter_InvalidValue)
+{
+	const char* INVALID_VALUE_TESTS[] = {
+		nullptr,
+		"",
+		"0",
+		"abc",
+		"k",
+		"10p",
+		"10e",
+		"-1",
+		"5g",
+		"4294967296",
+	};
+
+	for (const char* test : INVALID_VALUE_TESTS)
+	{
+		Parameters params;
+
+		ParseFrequencyParameter(params, test);
+
+		ASSERT(params.invalid_parameters);
+	}
+
+}
+

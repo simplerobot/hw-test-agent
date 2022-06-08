@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <sstream>
 #include "Main.hpp"
+#include <limits>
+#include <cmath>
 
 
 extern void PrintHelp(const char* app_name)
@@ -19,8 +21,10 @@ extern void PrintHelp(const char* app_name)
 	std::printf("  -u, --unlocked           Don't ensure only one agent runs at a time\n");
 	std::printf("  -lXX, --lock-timeout=XX  Seconds to wait for exclusive agent access\n");
 	std::printf("  -tXX, --test-timeout=XX  Seconds to wait for test to complete\n");
-	std::printf("  --system-frequency=XX    Firmware system frequency in hz\n");
-	std::printf("  --trace-frequency=XX     Firmware ITM trace frequency in hz\n");
+	std::printf("  --system-frequency=XX    Firmware system frequency, optionally followed\n");
+	std::printf("                           by k=kHz, m=MHz, or g=GHz (eg. --system-frequency=180m\n");
+	std::printf("  --trace-frequency=XX     Firmware ITM trace frequency, optionally followed\n");
+	std::printf("                           by k=kHz, m=MHz, or g=GHz (eg. --trace-frequency=2m\n");
 	std::printf("  -s, --server             Run as a network server\n");
 	std::printf("  -pXX, --port=XX          Port for the server to listen on\n");
 	std::printf("  -c, --show-config        Show board configuration\n");
@@ -36,6 +40,35 @@ static void CheckParameterError(Parameters& params, bool condition, const char* 
 {
 	if (!condition)
 		ParameterError(params, error_message);
+}
+
+extern uint32_t ParseFrequencyParameter(Parameters& params, const char* text)
+{
+	CheckParameterError(params, text != NULL, "Missing frequency.");
+	if (text == NULL)
+		return 0;
+
+	char empty = 0;
+	char* suffix = &empty;
+	double value = ::strtod(text, &suffix);
+
+	CheckParameterError(params, value != 0.0, "Invalid frequency.");
+
+	double scale = 1.0;
+	if (*suffix == 'k')
+		scale = 1000;
+	else if (*suffix == 'm')
+		scale = 1000000;
+	else if (*suffix == 'g')
+		scale = 1000000000;
+	else if (*suffix != '\0')
+		ParameterError(params, "Invalid frequency unit, only k, m, and g are supported.");
+
+	double result = std::round(value * scale);
+	CheckParameterError(params, result > 0, "Frequency must be positive.");
+	CheckParameterError(params, result <= std::numeric_limits<uint32_t>::max(), "Frequency is too large.");
+
+	return (uint32_t)result;
 }
 
 extern Parameters ParseCommandLineArguments(int argc, char* const argv[])
@@ -104,12 +137,12 @@ extern Parameters ParseCommandLineArguments(int argc, char* const argv[])
 			break;
 		case 'y': // system-frequency
 			CheckParameterError(params, params.system_frequency_hz == 0, "Error: Duplicate parameter.");
-			params.system_frequency_hz = std::atoi(optarg);
+			params.system_frequency_hz = ParseFrequencyParameter(params, optarg);
 			CheckParameterError(params, params.system_frequency_hz != 0, "Error: Invalid system frequency.");
 			break;
 		case 'z': // trace-frequency
 			CheckParameterError(params, params.trace_frequency_hz == 0, "Error: Duplicate parameter.");
-			params.trace_frequency_hz = std::atoi(optarg);
+			params.trace_frequency_hz = ParseFrequencyParameter(params, optarg);
 			CheckParameterError(params, params.trace_frequency_hz != 0, "Error: Invalid trace frequency.");
 			break;
 		case '?':

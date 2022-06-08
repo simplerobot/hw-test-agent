@@ -26,3 +26,4 @@ extern std::string ToString(const Parameters& params);
 extern Parameters ParseCommandLineArguments(int argc, char* const argv[]);
 extern void PrintHelp(const char* app_name);
 
+extern uint32_t ParseFrequencyParameter(Parameters& params, const char* text);
