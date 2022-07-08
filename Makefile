@@ -1,5 +1,6 @@
 GITHUB_DEPS += simplerobot/build-scripts
 GITHUB_DEPS += simplerobot/test
+GITHUB_DEPS += simplerobot/logger
 include ../build-scripts/build/release/include.make
 
 CC = g++
@@ -17,26 +18,35 @@ MAIN_SOURCE_DIR = $(SOURCE_DIR)/main
 TEST_SOURCE_DIR = $(SOURCE_DIR)/test
 RESOURCE_DIR = $(SOURCE_DIR)/resources
 
-VPATH = $(MAIN_SOURCE_DIR) : $(TEST_SOURCE_DIR) : $(PKG_TEST_DIR)
-TEST_SOURCE_DIRS = $(MAIN_SOURCE_DIR) $(TEST_SOURCE_DIR) $(PKG_TEST_DIR)
-TEST_SOURCE_FILES = $(notdir $(wildcard $(TEST_SOURCE_DIRS:%=%/*.cpp)))
-MAIN_SOURCE_DIRS = $(MAIN_SOURCE_DIR)
-MAIN_SOURCE_FILES = $(notdir $(wildcard $(MAIN_SOURCE_DIRS:%=%/*.cpp)))
+TEST_SOURCE_DIRS = $(MAIN_SOURCE_DIR) $(TEST_SOURCE_DIR) $(PKG_TEST_DIR) $(PKG_LOGGER_DIR) 
+TEST_SOURCE_FILES = $(notdir $(wildcard $(TEST_SOURCE_DIRS:%=%/*.cpp) $(TEST_SOURCE_DIRS:%=%/*.c)))
+TEST_O_FILES = $(addsuffix .o,$(basename $(TEST_SOURCE_FILES)))
+
+MAIN_SOURCE_DIRS = $(MAIN_SOURCE_DIR) $(PKG_LOGGER_DIR) 
+MAIN_SOURCE_FILES = $(notdir $(wildcard $(MAIN_SOURCE_DIRS:%=%/*.cpp) $(MAIN_SOURCE_DIRS:%=%/*.c)))
+MAIN_O_FILES = $(addsuffix .o,$(basename $(MAIN_SOURCE_FILES)))
+
+VPATH = $(TEST_SOURCE_DIRS) $(MAIN_SOURCE_DIRS)
 
 TEST_CFLAGS += $(TEST_SOURCE_DIRS:%=-I%)
 MAIN_CFLAGS += $(MAIN_SOURCE_DIRS:%=-I%)
 
-.PHONY : default deps test main release install-service uninstall-service clean
+.PHONY : default all deps test main release install-service uninstall-service clean
 
-default : release
+default : all
+
+all : release
 
 test : deps $(TEST_BUILD_DIR)/a.out
 	$(TEST_BUILD_DIR)/a.out
 	
-$(TEST_BUILD_DIR)/a.out : $(TEST_SOURCE_FILES:%.cpp=$(TEST_BUILD_DIR)/%.o)
+$(TEST_BUILD_DIR)/a.out : $(TEST_O_FILES:%=$(TEST_BUILD_DIR)/%)
 	$(CC) $(TEST_CFLAGS) -o $@ $^
 
 $(TEST_BUILD_DIR)/%.o : %.cpp Makefile | $(TEST_BUILD_DIR)
+	$(CC) -c $(TEST_CFLAGS) -o $@ $<
+
+$(TEST_BUILD_DIR)/%.o : %.c Makefile | $(TEST_BUILD_DIR)
 	$(CC) -c $(TEST_CFLAGS) -o $@ $<
 
 $(TEST_BUILD_DIR) :
@@ -44,10 +54,13 @@ $(TEST_BUILD_DIR) :
 
 main : test $(MAIN_BUILD_DIR)/a.out
 
-$(MAIN_BUILD_DIR)/a.out : $(MAIN_SOURCE_FILES:%.cpp=$(MAIN_BUILD_DIR)/%.o)
+$(MAIN_BUILD_DIR)/a.out : $(MAIN_O_FILES:%=$(MAIN_BUILD_DIR)/%)
 	$(CC) $(MAIN_CFLAGS) -o $@ $^
 
 $(MAIN_BUILD_DIR)/%.o : %.cpp Makefile | $(MAIN_BUILD_DIR)
+	$(CC) -c $(MAIN_CFLAGS) -o $@ $<
+
+$(MAIN_BUILD_DIR)/%.o : %.c Makefile | $(MAIN_BUILD_DIR)
 	$(CC) -c $(MAIN_CFLAGS) -o $@ $<
 
 $(MAIN_BUILD_DIR) :
